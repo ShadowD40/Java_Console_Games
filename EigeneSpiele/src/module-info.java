@@ -1,0 +1,9 @@
+/**
+ * 
+ */
+/**
+ * @author Shadow
+ *
+ */
+module EigeneSpiele {
+}

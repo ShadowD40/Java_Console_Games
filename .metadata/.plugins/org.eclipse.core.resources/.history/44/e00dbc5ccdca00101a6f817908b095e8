@@ -1,0 +1,318 @@
+package Projektwoche.src.mauMau;
+
+import java.util.Random;
+import java.util.Scanner;
+
+public class Spiel {
+
+	static Spieler s1; 
+	static Spieler s2;
+	static Spieler aktueller;
+	static Scanner sc= new Scanner(System.in);
+	static Random r = new Random();
+	static Stapel stp;
+	static boolean laeuft = true;
+	static Karte [] s1Karten = new Karte[8];
+	static Karte [] s2Karten = new Karte[8];
+	static Karte [] kartenStapel;
+	static Karte karteInDerMitte;
+	
+	
+	public static void main(String[] args) {
+		do {
+			
+		stp = new Stapel();
+		stp.erstelleKarten();
+		stp.mischen();
+		kartenStapel = stp.getKarten();
+		
+		menue();
+		karteInDerMitte();
+		int auswahl;
+		do {
+			auswahl = sc.nextInt();
+			if(auswahl>3|| auswahl<1) {
+				System.out.println("Bitte guelitge eingabe taetigen");
+				continue;
+			}
+			break;
+		}while(true);
+		switch(auswahl) {
+		case 1: einSpieler(); break;
+		case 2: zweiSpieler(); break;
+		case 3: System.out.println("Programm beenden"); laeuft = false; break;
+		}
+		System.out.println(karteInDerMitte);
+		//zug();
+
+		}while(laeuft);
+	}
+	public static void menue() {
+		System.out.println("Mau-Mau\n"
+				+ "1- Ein Spieler\n"
+				+ "2- Zwei Spieler\n"
+				+ "3- Programm beenden");
+	}
+	public static void einSpieler() {
+		System.out.println("Mit wie vielen Handkarten soll angefangen werden (max=8, min=1)");
+		int handKarten;
+		do {
+			handKarten = sc.nextInt();
+			if(handKarten>8|| handKarten<1) {
+				System.out.println("Bitte gib ein anzahl Handkarten die g�ltig ist an!");
+				continue;
+			}
+			break;
+		}while(true);
+		System.out.println("Geben Sie den Namen des Ersten Spielers ein!");
+		String name = sc.next();
+		System.out.println("Der Name des Zweiten Spielers ist Computer");
+		s1 = new Mensch(name, handKarten);
+		s2 = new Computer("COM", handKarten);
+		aktueller = s1;
+		for (int i = 0; i < 2; i++) {
+			
+		kartenZiehen(handKarten);
+		spielerWechsel();
+		}
+		handKartenZeigen();
+		zug();
+	}
+	
+	public static void zweiSpieler() {
+		System.out.println("Mit wie vielen Handkarten soll angefangen werden (max=8, min=1)");
+		int handKarten;
+		do {
+			handKarten = sc.nextInt();
+			if(handKarten>8|| handKarten<1) {
+				System.out.println("Bitte gib ein anzahl Handkarten die g�ltig ist an!");
+				continue;
+			}
+			break;
+		}while(true);
+		System.out.println("Geben Sie den Namen des Ersten Spielers ein!");
+		String name = sc.next();
+		System.out.println("Geben Sie den Namen des Zweiten Spielers ein!");
+		String name2 = sc.next();
+		s1 = new Mensch(name, handKarten);
+		s2 = new Mensch(name2, handKarten);
+	}
+	
+	public static int kartenAnzahlFragen() {
+		System.out.println("Mit wie viele Handkarten soll begonnen werden?(1 bis 8)");
+		int handKarten;
+		do {
+			handKarten = sc.nextInt();
+			if(handKarten <1 || handKarten>8) {
+				System.out.println("Bitte gültige Anzahl (1-8) eingeben!");
+				continue;
+			}
+			break;
+		}while(true);
+		return handKarten;
+	}
+	
+	public static void kartenAusteilen(int handKarten) {
+		for (int i = 0; i < handKarten; i++) {
+			kartenZiehen(s1Karten, s1);
+			kartenZiehen(s2Karten, s2);
+		}
+	}
+	
+	public static void karteInDerMitteSetzen() {
+		for (int i = 0; i < kartenStapel.length; i++) {
+			if(kartenStapel[i] != null) {
+				karteInDerMitte = kartenStapel[i];
+				kartenStapel[i] = null;
+				System.out.println("Karte in der Mitte: "+ karteInDerMitte.getZahl());
+				break;
+			}
+		}
+	}
+	
+	public static void spielStarten() {
+		boolean spielBeendet = false;
+		while(!spielBeendet) {
+			System.out.println("\nAktueller Spieler: "+aktueller.getName());
+			handKartenZeigen(aktueller ==s1 ? s1Karten : s2Karten);
+			zug(aktueller== s1?s1Karten:s2Karten);
+			spielBeendet = spielerGewonnen();
+			if(!spielBeendet) {
+				spielerWechsel();
+			}
+		}
+	}
+	 private static void handKartenZeigen(Karte[] hand) {
+	        System.out.println("Deine Karten:");
+	        for (int i = 0; i < hand.length; i++) {
+	            if (hand[i] != null) {
+	                System.out.println(i + ": " + hand[i].getFarbe() + hand[i].getZahl());
+	            }
+	        }
+	    }
+	
+	public static void kartenZiehen(Karte [] hand, Spieler spieler) {
+		for (int i = 0; i < kartenStapel.length; i++) {
+			if(kartenStapel[i]!= null) {
+				for (int j = 0; j < hand.length; j++) {
+					if(hand[j] != null) {
+						hand[j] = kartenStapel[i];
+                        kartenStapel[i] = null;
+                        return;
+					}
+				}
+			}
+		}
+	}
+	
+		public static void kartenZiehen(int zahl) {
+		    int gezogen = 0;
+
+		    for (int i = 0; i < kartenStapel.length && gezogen < zahl; i++) {
+		        if (kartenStapel[i] != null) {
+		            if (aktueller == s1) {
+		                for (int j = 0; j < s1Karten.length; j++) {
+		                    if (s1Karten[j] == null) {
+		                        s1Karten[j] = kartenStapel[i];
+		                        kartenStapel[i] = null;
+		                        gezogen++;
+		                        break;
+		                    }
+		                }
+		            } else if (aktueller == s2) {
+		                for (int j = 0; j < s2Karten.length; j++) {
+		                    if (s2Karten[j] == null) {
+		                        s2Karten[j] = kartenStapel[i];
+		                        kartenStapel[i] = null;
+		                        gezogen++;
+		                        break;
+		                    }
+		                }
+		            }
+		        }
+		    }
+
+	}
+	
+	public static void handKartenZeigen() {
+		for (int i = 0; i < s1Karten.length; i++) {
+			if(s1Karten[i]!= null)
+			System.out.println(s1Karten[i].getFarbe()+""+s1Karten[i].getZahl());
+			
+		}
+		System.out.println("-------------------");
+		for (int i = 0; i < s2Karten.length; i++) {
+			if(s2Karten[i]!= null)
+			System.out.println(s2Karten[i].getFarbe()+""+ s2Karten[i].getZahl());
+		}
+	}
+	public static void spielerWechsel() {
+		aktueller = (aktueller==s1)?s2:s1;
+	}
+	
+	public static void karteInDerMitte() {
+		System.out.println("Geht");
+		for (int i = 0; i < kartenStapel.length; i++) {
+			if(kartenStapel[i]!= null) {
+				System.out.println("Die Karte in der Mitte ist");
+				karteInDerMitte=kartenStapel[i];
+				kartenStapel[i]=null;
+				System.out.println(karteInDerMitte.getFarbe()+""+ karteInDerMitte.getZahl());
+				break;
+			}
+		}
+	}
+	
+	public static boolean wins1() {
+		for (int i = 0; i < s1Karten.length; i++) {
+			if(s1Karten[i]!= null)
+				return false;
+		}
+		System.out.println(s1.getName()+ " hat das Spiel Gewonnen!");
+		return true;
+	}
+	
+	public static boolean wins2() {
+		for (int i = 0; i < s2Karten.length; i++) {
+			if(s2Karten[i]!= null)
+				return false;
+		}
+		System.out.println(s2.getName()+ " hat das Spiel Gewonnen!");
+		return true;
+	}
+	public static void zug() {
+	    if (aktueller == s1) {
+
+	        boolean kannLegen = false;
+
+	        // Pr�fen, ob eine Karte gelegt werden kann
+	        for (int i = 0; i < s1Karten.length; i++) {
+	            if (s1Karten[i] != null && 
+	                (karteInDerMitte.getFarbe()==(s1Karten[i].getFarbe()) ||
+	                 karteInDerMitte.getZahl() == s1Karten[i].getZahl())) {
+	                kannLegen = true;
+	                break;
+	            }
+	        }
+
+	        if (kannLegen) {
+	            System.out.println("Du kannst eine Karte legen. Welche Karte willst du spielen? (Index eingeben)");
+
+	            while (true) {
+	                int kartenWahl = sc.nextInt();
+
+	                if (s1Karten[kartenWahl] != null &&
+	                    (karteInDerMitte.getFarbe()==(s1Karten[kartenWahl].getFarbe()) ||
+	                     karteInDerMitte.getZahl() == s1Karten[kartenWahl].getZahl())) {
+
+	                    karteInDerMitte = s1Karten[kartenWahl];
+	                    s1Karten[kartenWahl] = null; // Karte wurde gespielt
+	                    break;
+
+	                } else {
+	                    System.out.println("Diese Karte kann nicht gesetzt werden. W�hle erneut:");
+	                }
+	            }
+
+	        } else {
+	            System.out.println("Du musst eine Karte ziehen.");
+
+	            boolean gezogen = false;
+	            for (int i = 0; i < kartenStapel.length; i++) {
+	                if (kartenStapel[i] != null) {
+	                    // F�ge Karte zur Hand hinzu
+	                    for (int j = 0; j < s1Karten.length; j++) {
+	                        if (s1Karten[j] == null) {
+	                            s1Karten[j] = kartenStapel[i];
+	                            kartenStapel[i] = null;
+	                            gezogen = true;
+	                            break;
+	                        }
+	                    }
+	                    if (gezogen) break;
+	                }
+	            }
+
+	            if (!gezogen) {
+	                System.out.println("Keine Karten mehr im Stapel. Unentschieden!");
+	            }
+
+	            handKartenZeigen();
+	        }
+	    }
+	}
+
+	
+	public static void karteLegen(int karte) {
+		if(aktueller == s1) {
+				
+			if(karteInDerMitte.getFarbe()== s1Karten[karte].getFarbe() || karteInDerMitte.getZahl()==s1Karten[karte].getZahl()) {
+				karteInDerMitte = s1Karten[karte];
+			} else {
+				System.out.println("Diese karte kann nicht gesetzt werden");
+			
+			}
+		}
+	}
+
+}

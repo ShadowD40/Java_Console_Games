@@ -1,0 +1,160 @@
+package mastermindNeu;
+
+import java.util.Random;
+import java.util.Scanner;
+
+public class Mastermind {
+
+	static Spieler s1;
+	static Spieler s2;
+	static Spieler aktueller;
+	static Spieler nichtAktueller;
+	static Scanner sc = new Scanner(System.in);
+	static Random r = new Random();
+	static boolean laeuft = true;
+	public static void main(String[] args) {
+		while(laeuft) {
+			
+	menu();
+	int auswahl;
+	do {
+		auswahl = sc.nextInt();
+		if(auswahl>3 || auswahl<1) {
+			System.out.println("Bitte gib ein gültigen wert ein!");
+			continue;
+		}
+		break;
+	}while(true);
+	switch(auswahl) {
+	case 1: einSpieler(); break;
+	case 2: zweiSpieler(); break;
+	case 3: System.out.println("Programm beenden!"); laeuft = false; break;
+	}
+
+		}
+	}
+	public static void menu() {
+		System.out.println("MasterMind\n"
+				+ "1- Ein Spieler\n"
+				+ "2- Zwei Spieler\n"
+				+ "3- Programm beenden");
+	}
+	
+	public static void einSpieler() {
+		boolean richtigerBuchstabe = true;
+		System.out.println("Geben Sie den namen ein");
+		String name = sc.next();
+		System.out.println("Geben Sie den Farbcode an(nur in großbuchstaben!)");
+		String farbcode;
+		do {
+			farbcode = sc.next();
+			for (int i = 0; i < farbcode.length(); i++) {
+				if(!(farbcode.charAt(i)!='R'||farbcode.charAt(i)!='G'|| farbcode.charAt(i)!='B' || farbcode.charAt(i)!='Y'|| farbcode.charAt(i)!='O'|| farbcode.charAt(i)!='P')) {
+					System.out.println("Bitte gib nur die Folgenden Buchstaben ein (R,G,B,Y,O,P) für den Farbcode ein");
+					richtigerBuchstabe = false;
+					break;
+				}
+			}
+			if(richtigerBuchstabe!=true) {
+				continue;
+			}
+			if(farbcode.length()!=4) {
+				System.out.println("Der Farbcode darf nur die Laenge 4 haben");
+				continue;
+			}
+			break;
+			
+		}while(true);
+		System.out.println("Anderer Spieler Computer");
+		s1 = new Mensch(name, farbcode);
+		s2 = new Computer("Computer", farbcodeFürComputer());
+		aktueller = s1;
+		nichtAktueller = s2;
+		s1.farbcodeInChar();
+		s2.farbcodeInChar();
+		
+		
+	}
+	
+	public static void zweiSpieler() {
+		boolean richtigerBuchstabe = true;
+		System.out.println("Geben Sie den namen ein");
+		String name = sc.next();
+		System.out.println("Geben Sie den Farbcode an(nur in großbuchstaben!)");
+		String farbcode;
+		do {
+			farbcode = sc.next();
+			for (int i = 0; i < farbcode.length(); i++) {
+				if(!(farbcode.charAt(i)!='R'||farbcode.charAt(i)!='G'|| farbcode.charAt(i)!='B' || farbcode.charAt(i)!='Y'|| farbcode.charAt(i)!='O'|| farbcode.charAt(i)!='P')) {
+					System.out.println("Bitte gib nur die Folgenden Buchstaben ein (R,G,B,Y,O,P) für den Farbcode ein");
+					richtigerBuchstabe = false;
+					break;
+				}
+			}
+			if(richtigerBuchstabe!=true) {
+				continue;
+			}
+			if(farbcode.length()!=4) {
+				System.out.println("Der Farbcode darf nur die Laenge 4 haben");
+				continue;
+			}
+			break;
+			
+		}while(true);
+		boolean richtigerBuchstabe2 = true;
+		System.out.println("Geben Sie den namen ein");
+		String name2 = sc.next();
+		System.out.println("Geben Sie den Farbcode an(nur in großbuchstaben!)");
+		String farbcode2;
+		do {
+			farbcode2 = sc.next();
+			for (int i = 0; i < farbcode2.length(); i++) {
+				if(!(farbcode2.charAt(i)!='R'||farbcode2.charAt(i)!='G'|| farbcode2.charAt(i)!='B' || farbcode2.charAt(i)!='Y'|| farbcode2.charAt(i)!='O'|| farbcode2.charAt(i)!='P')) {
+					System.out.println("Bitte gib nur die Folgenden Buchstaben ein (R,G,B,Y,O,P) für den Farbcode ein");
+					richtigerBuchstabe = false;
+					break;
+				}
+			}
+			if(richtigerBuchstabe2!=true) {
+				continue;
+			}
+			if(farbcode2.length()!=4) {
+				System.out.println("Der Farbcode darf nur die Laenge 4 haben");
+				continue;
+			}
+			break;
+			
+		}while(true);
+		System.out.println("Anderer Spieler Computer");
+		s1 = new Mensch(name, farbcode);
+		s2 = new Mensch(name2, farbcode2);
+		aktueller = s1;
+		s1.farbcodeInChar();
+		s2.farbcodeInChar();
+		
+		
+	}
+	
+	public static String farbcodeFürComputer() {
+		char [] buchstaben = new char[4];
+		String farbcode;
+		for (int i = 0; i < 4; i++) {
+			int rdm = r.nextInt(6);
+			switch(rdm) {
+			case 0: buchstaben[i]='R'; break;
+			case 1: buchstaben[i]='G'; break;
+			case 2: buchstaben[i]='B'; break;
+			case 3: buchstaben[i]='Y'; break;
+			case 4: buchstaben[i]='O'; break;
+			case 5: buchstaben[i]='P'; break;
+			}
+		}
+		farbcode =  new String(buchstaben);
+		return farbcode;
+	}
+	
+	public static void zug() {
+		
+	}
+
+}
